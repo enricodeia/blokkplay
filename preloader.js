@@ -1,4 +1,4 @@
-indow.onload = function() {
+window.onload = function() {
   const tl = gsap.timeline();
 
   // Initialize SplitType with word-based split for .h-h1
