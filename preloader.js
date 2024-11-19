@@ -16,18 +16,10 @@ window.onload = function() {
     }
   });
 
-  // Loader columns animation
-  tl.to(".top_wrap .loader_col_01", {
+  // Loader columns animation for both top and bottom
+  tl.to([".top_wrap .loader_col_01", ".bottom_wrap .loader_col_01"], {
     scaleY: 0,
     transformOrigin: "bottom center",
-    stagger: { amount: 0.2, from: "center" },
-    duration: 0.5,
-    ease: "power3.out"
-  }, "<");
-
-  tl.to(".bottom_wrap .loader_col_01", {
-    scaleY: 0,
-    transformOrigin: "top center",
     stagger: { amount: 0.2, from: "center" },
     duration: 0.5,
     ease: "power3.out"
