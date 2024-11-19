@@ -1,6 +1,3 @@
-# blokkplay
-
-
 # Blokkplay
 
 Blokkplay is a cross-brand gaming platform where players earn **Blokk tokens** for in-game achievements and time spent playing thousands of online games. From popular titles like **Fortnite**, **Valorant**, **Call of Duty**, **Rocket League**, and **League of Legends** to emerging games, Blokkplay bridges the gap between gaming and cryptocurrency.
