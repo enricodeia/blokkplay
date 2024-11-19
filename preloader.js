@@ -1,4 +1,4 @@
-window.onload = function() {
+indow.onload = function() {
   const tl = gsap.timeline();
 
   // Initialize SplitType with word-based split for .h-h1
@@ -16,7 +16,7 @@ window.onload = function() {
     }
   });
 
-  // Loader columns animation for top
+  // Loader columns animation for the top
   tl.to(".top_wrap .loader_col_01", {
     scaleY: 0,
     transformOrigin: "bottom center",
@@ -33,7 +33,7 @@ window.onload = function() {
     ease: "power3.out"
   }, "<");
 
-  // Loader columns animation for bottom
+  // Loader columns animation for the bottom (these columns should animate after the top columns)
   tl.to(".bottom_wrap .loader_col_01", {
     scaleY: 0,
     transformOrigin: "top center",
