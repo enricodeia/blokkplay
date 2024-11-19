@@ -42,12 +42,15 @@ if (!isMobile()) {
         });
       }
 
-      // Apply animations to grid items
-      gsap.fromTo('.pixel_box_top', 
-        { scale: 0, opacity: 1 }, 
+      // Apply animations to grid items (bottom to top)
+      gsap.fromTo(
+        '.pixel_box_top',
+        { y: 50, scale: 0, opacity: 0 }, // Start state: Below initial position
         {
+          y: 0, // Move to original position
           scale: 1,
-          duration: 0.6,
+          opacity: 1,
+          duration: 0.8,
           ease: "power4.out",
           scrollTrigger: {
             trigger: '.section_divider_top',
@@ -56,7 +59,7 @@ if (!isMobile()) {
             toggleActions: "restart none none reverse",
             scrub: true,
           },
-          stagger: { amount: 2, from: "random", grid: [cols, rows] }
+          stagger: { amount: 2, from: "random", grid: "auto" }
         }
       );
     }
