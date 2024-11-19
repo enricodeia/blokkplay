@@ -16,10 +16,27 @@ window.onload = function() {
     }
   });
 
-  // Loader columns animation for bottom (this was already correct)
-  tl.to(".bottom_wrap .loader_col_01", {
+  // Loader columns animation for top
+  tl.to(".top_wrap .loader_col_01", {
     scaleY: 0,
     transformOrigin: "bottom center",
+    stagger: { amount: 0.2, from: "center" },
+    duration: 0.5,
+    ease: "power3.out"
+  }, "<");
+
+  tl.to(".top_wrap .loader_col_02", {
+    y: "-100%",
+    transformOrigin: "bottom center",
+    stagger: { amount: 0.2, from: "center" },
+    duration: 0.6,
+    ease: "power3.out"
+  }, "<");
+
+  // Loader columns animation for bottom
+  tl.to(".bottom_wrap .loader_col_01", {
+    scaleY: 0,
+    transformOrigin: "top center",
     stagger: { amount: 0.2, from: "center" },
     duration: 0.5,
     ease: "power3.out"
@@ -36,23 +53,6 @@ window.onload = function() {
     }
   }, "<");
 
-  // Now, applying the same animation to the top loader columns, ensuring correct sequencing:
-  tl.to(".top_wrap .loader_col_01", {
-    scaleY: 0,
-    transformOrigin: "bottom center",
-    stagger: { amount: 0.2, from: "center" },
-    duration: 0.5,
-    ease: "power3.out"
-  }, "<"); // Start right after the previous animation
-
-  tl.to(".top_wrap .loader_col_02", {
-    y: "-100%",
-    transformOrigin: "bottom center",
-    stagger: { amount: 0.2, from: "center" },
-    duration: 0.6,
-    ease: "power3.out"
-  }, "<"); // Start right after the previous animation for the top loader
-
   // Fade-in main elements
   tl.to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo"], {
     opacity: 1,
@@ -68,6 +68,25 @@ window.onload = function() {
     duration: 0.5,
     ease: "power4.out"
   }, "+=0.1");
+
+  tl.to(".top_wrap .loader_col_02", {
+    y: "-100%",
+    transformOrigin: "bottom center",
+    stagger: { amount: 0.2, from: "center" },
+    duration: 0.6,
+    ease: "power3.out"
+  }, "<");
+
+  tl.to(".bottom_wrap .loader_col_02", {
+    y: "100%",
+    transformOrigin: "top center",
+    stagger: { amount: 0.2, from: "center" },
+    duration: 0.6,
+    ease: "power3.out",
+    onComplete: () => {
+      gsap.set(".pre_loader_wrap", { display: "none" });
+    }
+  }, "<");
 
   // Flicker effect for .h-h1 (words)
   tl.to(h1Split.words, {
