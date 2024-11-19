@@ -16,7 +16,7 @@ window.onload = function() {
     }
   });
 
-  // Top loader columns animation (first)
+  // Top loader columns animation (FIRST, same as bottom)
   tl.to(".top_wrap .loader_col_01", {
     scaleY: 0,
     transformOrigin: "bottom center",
@@ -33,7 +33,7 @@ window.onload = function() {
     ease: "power3.out"
   }, "<");
 
-  // Fade-in main elements
+  // **Main Elements Fade-In**
   tl.to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo"], {
     opacity: 1,
     duration: 0.3,
@@ -42,14 +42,14 @@ window.onload = function() {
     .to("#line-left", { x: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, "<")
     .to("#line-right", { x: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, "<");
 
-  // Fade-out pre-loader elements and animate loader column 02 (top loader columns done)
+  // Fade-out pre-loader elements and animate loader column 02
   tl.to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo", "#line-left", "#line-right"], {
     opacity: 0,
     duration: 0.5,
     ease: "power4.out"
   }, "+=0.1");
 
-  // Bottom loader columns animation (second, after top loader)
+  // Bottom loader columns animation (SECOND, after top columns)
   tl.to(".bottom_wrap .loader_col_01", {
     scaleY: 0,
     transformOrigin: "top center",
