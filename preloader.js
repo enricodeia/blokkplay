@@ -1,8 +1,8 @@
-window.onload = function() {
+window.onload = function () {
   const tl = gsap.timeline();
 
   // Initialize SplitType with word-based split for .h-h1
-  let h1Split = new SplitType('.h-h1', { types: 'words' });
+  const h1Split = new SplitType('.h-h1', { types: 'words' });
 
   // Ensure text starts hidden
   gsap.set(h1Split.words, { opacity: 0 });
@@ -11,7 +11,7 @@ window.onload = function() {
   // Counter animation
   tl.to({}, {
     duration: 1.5,
-    onUpdate: function() {
+    onUpdate: function () {
       document.querySelector('#counter').textContent = Math.round(this.progress() * 100) + '%';
     }
   });
@@ -19,7 +19,7 @@ window.onload = function() {
   // Loader columns animation
   tl.to(".top_wrap .loader_col_01", {
     scaleY: 0,
-    transformOrigin: "top center", // Copying motion of bottom_wrap (upward shrink)
+    transformOrigin: "top center", // Same as bottom_wrap .loader_col_01
     stagger: { amount: 0.2, from: "center" },
     duration: 0.5,
     ease: "power3.out"
@@ -27,7 +27,7 @@ window.onload = function() {
 
   tl.to(".bottom_wrap .loader_col_01", {
     scaleY: 0,
-    transformOrigin: "top center",
+    transformOrigin: "top center", // Matches the top_wrap behavior for consistency
     stagger: { amount: 0.2, from: "center" },
     duration: 0.5,
     ease: "power3.out"
@@ -49,8 +49,9 @@ window.onload = function() {
     ease: "power4.out"
   }, "+=0.1");
 
+  // Animate .loader_col_02 (top_wrap behaves the same as bottom_wrap)
   tl.to(".top_wrap .loader_col_02", {
-    y: "100%", // Copying motion of bottom_wrap (downward motion)
+    y: "100%", // Same animation as bottom_wrap .loader_col_02
     transformOrigin: "top center",
     stagger: { amount: 0.2, from: "center" },
     duration: 0.6,
@@ -58,7 +59,7 @@ window.onload = function() {
   }, "<");
 
   tl.to(".bottom_wrap .loader_col_02", {
-    y: "100%",
+    y: "100%", // Matches the top_wrap motion
     transformOrigin: "top center",
     stagger: { amount: 0.2, from: "center" },
     duration: 0.6,
