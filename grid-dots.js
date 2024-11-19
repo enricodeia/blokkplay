@@ -107,8 +107,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function update(delta) {
       const now = Date.now();
-      if (now - lastMouseMove > 3000) {
-        // Scale down to default state after 3s of inactivity
+      if (now - lastMouseMove > 1500) {
+        // Scale down to default state after 1.5s of inactivity
         interactiveMaterial.uniforms.u_interactionRadius.value +=
           (DOT_SIZE * 50 - interactiveMaterial.uniforms.u_interactionRadius.value) * Math.min(0.5 * delta, 1.0);
       } else {
