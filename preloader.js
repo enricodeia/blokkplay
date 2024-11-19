@@ -16,7 +16,7 @@ window.onload = function() {
     }
   });
 
-  // Top loader columns animation (FIRST, same as bottom)
+  // Loader columns animation
   tl.to(".top_wrap .loader_col_01", {
     scaleY: 0,
     transformOrigin: "bottom center",
@@ -25,15 +25,15 @@ window.onload = function() {
     ease: "power3.out"
   }, "<");
 
-  tl.to(".top_wrap .loader_col_02", {
-    y: "-100%",
-    transformOrigin: "bottom center",
+  tl.to(".bottom_wrap .loader_col_01", {
+    scaleY: 0,
+    transformOrigin: "top center",
     stagger: { amount: 0.2, from: "center" },
-    duration: 0.6,
+    duration: 0.5,
     ease: "power3.out"
   }, "<");
 
-  // **Main Elements Fade-In**
+  // Fade-in main elements
   tl.to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo"], {
     opacity: 1,
     duration: 0.3,
@@ -49,12 +49,11 @@ window.onload = function() {
     ease: "power4.out"
   }, "+=0.1");
 
-  // Bottom loader columns animation (SECOND, after top columns)
-  tl.to(".bottom_wrap .loader_col_01", {
-    scaleY: 0,
-    transformOrigin: "top center",
+  tl.to(".top_wrap .loader_col_02", {
+    y: "-100%",
+    transformOrigin: "bottom center",
     stagger: { amount: 0.2, from: "center" },
-    duration: 0.5,
+    duration: 0.6,
     ease: "power3.out"
   }, "<");
 
