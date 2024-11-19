@@ -105,14 +105,41 @@ document.addEventListener("DOMContentLoaded", function () {
     let targetIntensity = 0.0;
     let lastMouseMove = Date.now();
 
+    // Function to handle resizing and keep everything centered
+    function resizeScene() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      // Update camera
+      camera.left = width / -2;
+      camera.right = width / 2;
+      camera.top = height / 2;
+      camera.bottom = height / -2;
+      camera.updateProjectionMatrix();
+
+      // Update renderer size
+      renderer.setSize(width, height);
+
+      // Update grid positions
+      const newPositions = generateGrid(width, height, GAP);
+      backgroundPoints.geometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(newPositions, 3)
+      );
+      backgroundPoints.geometry.attributes.position.needsUpdate = true;
+      interactivePoints.geometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(newPositions, 3)
+      );
+      interactivePoints.geometry.attributes.position.needsUpdate = true;
+    }
+
     function update(delta) {
       const now = Date.now();
       if (now - lastMouseMove > 1500) {
-        // Scale down to default state after 1.5s of inactivity
         interactiveMaterial.uniforms.u_interactionRadius.value +=
           (DOT_SIZE * 50 - interactiveMaterial.uniforms.u_interactionRadius.value) * Math.min(0.5 * delta, 1.0);
       } else {
-        // Resume normal behavior
         interactiveMaterial.uniforms.u_interactionRadius.value +=
           (INTERACT_RADIUS - interactiveMaterial.uniforms.u_interactionRadius.value) * Math.min(0.5 * delta, 1.0);
       }
@@ -144,21 +171,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     animate();
 
-    window.addEventListener("resize", () => {
-      camera.left = window.innerWidth / -2;
-      camera.right = window.innerWidth / 2;
-      camera.top = window.innerHeight / 2;
-      camera.bottom = window.innerHeight / -2;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+    window.addEventListener("resize", resizeScene);
 
-      const newPositions = generateGrid(window.innerWidth, window.innerHeight, GAP);
-      backgroundPoints.geometry.setAttribute(
-        "position",
-        new THREE.Float32BufferAttribute(newPositions, 3)
-      );
-      backgroundPoints.geometry.attributes.position.needsUpdate = true;
-    });
+    resizeScene(); // Ensure the scene is correctly initialized
   } else {
     console.error("Three.js is not loaded. Please include Three.js in your HTML.");
   }
