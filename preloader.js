@@ -16,7 +16,7 @@ window.onload = function() {
     }
   });
 
-  // Loader columns animation for the top
+  // Top loader columns animation (first)
   tl.to(".top_wrap .loader_col_01", {
     scaleY: 0,
     transformOrigin: "bottom center",
@@ -33,26 +33,6 @@ window.onload = function() {
     ease: "power3.out"
   }, "<");
 
-  // Loader columns animation for the bottom (these columns should animate after the top columns)
-  tl.to(".bottom_wrap .loader_col_01", {
-    scaleY: 0,
-    transformOrigin: "top center",
-    stagger: { amount: 0.2, from: "center" },
-    duration: 0.5,
-    ease: "power3.out"
-  }, "<");
-
-  tl.to(".bottom_wrap .loader_col_02", {
-    y: "100%",
-    transformOrigin: "top center",
-    stagger: { amount: 0.2, from: "center" },
-    duration: 0.6,
-    ease: "power3.out",
-    onComplete: () => {
-      gsap.set(".pre_loader_wrap", { display: "none" });
-    }
-  }, "<");
-
   // Fade-in main elements
   tl.to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo"], {
     opacity: 1,
@@ -62,18 +42,19 @@ window.onload = function() {
     .to("#line-left", { x: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, "<")
     .to("#line-right", { x: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, "<");
 
-  // Fade-out pre-loader elements and animate loader column 02
+  // Fade-out pre-loader elements and animate loader column 02 (top loader columns done)
   tl.to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo", "#line-left", "#line-right"], {
     opacity: 0,
     duration: 0.5,
     ease: "power4.out"
   }, "+=0.1");
 
-  tl.to(".top_wrap .loader_col_02", {
-    y: "-100%",
-    transformOrigin: "bottom center",
+  // Bottom loader columns animation (second, after top loader)
+  tl.to(".bottom_wrap .loader_col_01", {
+    scaleY: 0,
+    transformOrigin: "top center",
     stagger: { amount: 0.2, from: "center" },
-    duration: 0.6,
+    duration: 0.5,
     ease: "power3.out"
   }, "<");
 
