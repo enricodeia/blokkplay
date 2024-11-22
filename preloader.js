@@ -2,60 +2,153 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
         console.log("Preloader script started");
 
-        // Create lightweight preloader dynamically
-        const preloader = document.createElement("div");
-        preloader.className = "preloader-overlay";
-        preloader.innerHTML = `
-            <div class="loading-text-wrap">
-                <span id="counter">0%</span>
-                <span class="loading-text">Loading...</span>
-            </div>
-        `;
-        document.body.appendChild(preloader);
+        let preLoaderWrap = document.querySelector(".pre_loader_wrap"),
+            headerText = document.querySelector(".h-h1"),
+            counter = document.querySelector("#counter");
 
-        // Initial styles for the preloader
-        gsap.set(preloader, { visibility: "visible" });
-        gsap.set("#counter", { opacity: 1 });
-        gsap.set(".loading-text", { opacity: 1 });
+        if (!preLoaderWrap) {
+            console.error("Missing .pre_loader_wrap");
+            return;
+        }
 
-        // GSAP Timeline for animations
-        const tl = gsap.timeline({
-            onComplete: function () {
-                console.log("Preloader animation completed");
-                preloader.remove(); // Remove preloader from DOM after animation
-            }
-        });
+        // GSAP MatchMedia for animations on different breakpoints
+        const mm = gsap.matchMedia();
 
-        // Animate the counter
-        let counter = document.querySelector("#counter");
-        tl.to({}, {
-            duration: 1.5,
-            onUpdate: function () {
-                if (counter) {
-                    let progress = Math.round(100 * this.progress());
-                    counter.textContent = `${progress}%`;
+        // Desktop and Tablet Animations (width >= 768px)
+        mm.add("(min-width: 768px)", () => {
+            let splitText = headerText ? new SplitType(".h-h1", { types: "words" }) : null;
+
+            if (splitText) gsap.set(splitText.words, { opacity: 0 });
+            gsap.set(".block_support", { opacity: 0, y: 20 });
+
+            let tl = gsap.timeline();
+
+            // Animate counter
+            tl.to({}, {
+                duration: 1.5,
+                onUpdate: function () {
+                    if (counter) {
+                        let progress = Math.round(100 * this.progress());
+                        counter.textContent = `${progress}%`;
+                    }
                 }
+            });
+
+            // Preloader animations
+            tl.to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo"], {
+                opacity: 1,
+                duration: 0.3,
+                ease: "power2.out"
+            }, "+=0.5")
+                .to("#line-left", { x: 0, opacity: 0.7, duration: 0.6, ease: "power2.out" }, "<")
+                .to("#line-right", { x: 0, opacity: 0.7, duration: 0.6, ease: "power2.out" }, "<")
+                .to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo", "#line-left", "#line-right"], {
+                    opacity: 0,
+                    duration: 0.5,
+                    ease: "power4.out"
+                }, "+=0.1")
+                .to(".top_wrap .loader_col_02", {
+                    y: "-100%",
+                    transformOrigin: "bottom center",
+                    stagger: { amount: 0.2, from: "center" },
+                    duration: 0.6,
+                    ease: "power3.out"
+                })
+                .to(".bottom_wrap .loader_col_02", {
+                    y: "100%",
+                    transformOrigin: "top center",
+                    stagger: { amount: 0.2, from: "center" },
+                    duration: 0.6,
+                    ease: "power3.out",
+                    onComplete: function () {
+                        console.log("Preloader animation completed");
+                        gsap.set(".pre_loader_wrap", { display: "none" });
+                    }
+                }, "<");
+
+            // Split text animation for desktop
+            if (splitText) {
+                tl.to(splitText.words, {
+                    opacity: 1,
+                    duration: 1.2,
+                    ease: "power1.out",
+                    stagger: { amount: 0.5, from: "random" }
+                }, "<");
             }
+
+            // Additional animations
+            tl.to(".block_support", { opacity: 1, y: 0, duration: 0.8, ease: "power1.out", stagger: 0.3 }, "<")
+                .from(".spline_triangle", { opacity: 0, y: 200, duration: 2, ease: "power4.inOut" }, "<")
+                .from("#shiny-cta", { opacity: 0, scale: 0.9, duration: 1.2, ease: "power2.out" }, "<")
+                .from(".nav", { y: -50, opacity: 0, duration: 0.75, ease: "power4.out" }, "+=0.01")
+                .from(".arrow_container", { opacity: 0, duration: 1.2, ease: "power4.out" }, "+=0.2");
         });
 
-        // Fade out the preloader smoothly
-        tl.to(preloader, {
-            opacity: 0,
-            duration: 0.8,
-            ease: "power2.out"
+        // Mobile Animations (width < 768px) - Disable h-h1 Animation
+        mm.add("(max-width: 767px)", () => {
+            console.log("Skipping h-h1 animation on mobile");
+
+            // Ensure h-h1 is visible immediately without animation
+            gsap.set(".h-h1", { opacity: 1 });
+
+            // Minimal animations for mobile
+            let tl = gsap.timeline();
+
+            // Animate counter
+            tl.to({}, {
+                duration: 1.5,
+                onUpdate: function () {
+                    if (counter) {
+                        let progress = Math.round(100 * this.progress());
+                        counter.textContent = `${progress}%`;
+                    }
+                }
+            });
+
+            // Preloader animations without h-h1 on mobile
+            tl.to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo"], {
+                opacity: 1,
+                duration: 0.3,
+                ease: "power2.out"
+            }, "+=0.5")
+                .to("#line-left", { x: 0, opacity: 0.7, duration: 0.6, ease: "power2.out" }, "<")
+                .to("#line-right", { x: 0, opacity: 0.7, duration: 0.6, ease: "power2.out" }, "<")
+                .to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo", "#line-left", "#line-right"], {
+                    opacity: 0,
+                    duration: 0.5,
+                    ease: "power4.out"
+                }, "+=0.1")
+                .to(".top_wrap .loader_col_02", {
+                    y: "-100%",
+                    transformOrigin: "bottom center",
+                    stagger: { amount: 0.2, from: "center" },
+                    duration: 0.6,
+                    ease: "power3.out"
+                })
+                .to(".bottom_wrap .loader_col_02", {
+                    y: "100%",
+                    transformOrigin: "top center",
+                    stagger: { amount: 0.2, from: "center" },
+                    duration: 0.6,
+                    ease: "power3.out",
+                    onComplete: function () {
+                        console.log("Preloader animation completed on mobile");
+                        gsap.set(".pre_loader_wrap", { display: "none" });
+                    }
+                }, "<");
         });
 
-        // Timeout fallback to remove preloader
+        // Timeout fallback to hide preloader
         setTimeout(() => {
-            if (preloader && preloader.style.opacity !== "0") {
+            if (preLoaderWrap.style.display !== "none") {
                 console.warn("Preloader forced to hide after timeout");
-                gsap.set(preloader, { display: "none" });
+                gsap.set(preLoaderWrap, { display: "none" });
             }
-        }, 10000); // 10 seconds fallback
+        }, 10000); // 10 seconds timeout
     } catch (error) {
         console.error("Error in preloader script:", error);
-        let preloader = document.querySelector(".preloader-overlay");
-        if (preloader) preloader.remove(); // Ensure preloader is removed on error
+        let preLoaderWrap = document.querySelector(".pre_loader_wrap");
+        if (preLoaderWrap) gsap.set(preLoaderWrap, { display: "none" });
     }
 });
 
