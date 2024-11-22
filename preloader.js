@@ -2,76 +2,60 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
         console.log("Preloader script started");
 
-        let preLoaderWrap = document.querySelector(".pre_loader_wrap"),
-            headerText = document.querySelector(".h-h1"),
-            counter = document.querySelector("#counter");
+        // Create lightweight preloader dynamically
+        const preloader = document.createElement("div");
+        preloader.className = "preloader-overlay";
+        preloader.innerHTML = `
+            <div class="loading-text-wrap">
+                <span id="counter">0%</span>
+                <span class="loading-text">Loading...</span>
+            </div>
+        `;
+        document.body.appendChild(preloader);
 
-        if (!preLoaderWrap) {
-            console.error("Missing .pre_loader_wrap");
-            return;
-        }
+        // Initial styles for the preloader
+        gsap.set(preloader, { visibility: "visible" });
+        gsap.set("#counter", { opacity: 1 });
+        gsap.set(".loading-text", { opacity: 1 });
 
-        // Hide preloader elements initially
-        gsap.set(preLoaderWrap, { visibility: "visible" });
-        if (headerText) {
-            let splitText = new SplitType(".h-h1", { types: "words" });
-            gsap.set(splitText.words, { opacity: 0 });
-        }
-        gsap.set(".block_support", { opacity: 0, y: 20 });
+        // GSAP Timeline for animations
+        const tl = gsap.timeline({
+            onComplete: function () {
+                console.log("Preloader animation completed");
+                preloader.remove(); // Remove preloader from DOM after animation
+            }
+        });
 
-        let tl = gsap.timeline();
-
-        // Smoothly animate counter
+        // Animate the counter
+        let counter = document.querySelector("#counter");
         tl.to({}, {
             duration: 1.5,
             onUpdate: function () {
                 if (counter) {
                     let progress = Math.round(100 * this.progress());
-                    counter.textContent = progress + "%";
+                    counter.textContent = `${progress}%`;
                 }
             }
         });
 
-        // Smooth animations for preloader elements
-        tl.to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo"], { opacity: 1, duration: 0.3, ease: "power2.out" }, "+=0.5")
-            .to("#line-left", { x: 0, opacity: 0.7, duration: 0.6, ease: "power2.out" }, "<")
-            .to("#line-right", { x: 0, opacity: 0.7, duration: 0.6, ease: "power2.out" }, "<")
-            .to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo", "#line-left", "#line-right"], { opacity: 0, duration: 0.5, ease: "power4.out" }, "+=0.1")
-            .to(".top_wrap .loader_col_02", { y: "-100%", transformOrigin: "bottom center", stagger: { amount: 0.2, from: "center" }, duration: 0.6, ease: "power3.out" })
-            .to(".bottom_wrap .loader_col_02", { y: "100%", transformOrigin: "top center", stagger: { amount: 0.2, from: "center" }, duration: 0.6, ease: "power3.out", onComplete: function () {
-                console.log("Preloader animation completed");
-                gsap.set(".pre_loader_wrap", { display: "none" });
-            } }, "<");
-
-        if (headerText) {
-            let splitText = new SplitType(".h-h1", { types: "words" });
-            tl.to(splitText.words, { opacity: 1, duration: 1.2, ease: "power1.out", stagger: { amount: 0.5, from: "random" } }, "<");
-        }
-
-        // Additional animations
-        tl.to(".block_support", { opacity: 1, y: 0, duration: 0.8, ease: "power1.out", stagger: 0.3 }, "<")
-            .from(".spline_triangle", { opacity: 0, y: 200, duration: 2, ease: "power4.inOut" }, "<")
-            .from("#shiny-cta", { opacity: 0, scale: 0.9, duration: 1.2, ease: "power2.out" }, "<")
-            .from(".nav", { y: -50, opacity: 0, duration: 0.75, ease: "power4.out" }, "+=0.01")
-            .from(".arrow_container", { opacity: 0, duration: 1.2, ease: "power4.out" }, "+=0.2");
-
-        // Force animation start after load
-        window.addEventListener("load", () => {
-            console.log("Window loaded: Refreshing GSAP layout");
-            ScrollTrigger.refresh(); // Ensure layout calculations are up-to-date
-            tl.play(); // Start the timeline if paused
+        // Fade out the preloader smoothly
+        tl.to(preloader, {
+            opacity: 0,
+            duration: 0.8,
+            ease: "power2.out"
         });
 
-        // Timeout fallback
+        // Timeout fallback to remove preloader
         setTimeout(() => {
-            if (preLoaderWrap.style.display !== "none") {
+            if (preloader && preloader.style.opacity !== "0") {
                 console.warn("Preloader forced to hide after timeout");
-                gsap.set(preLoaderWrap, { display: "none" });
+                gsap.set(preloader, { display: "none" });
             }
-        }, 10000);
+        }, 10000); // 10 seconds fallback
     } catch (error) {
         console.error("Error in preloader script:", error);
-        let preLoaderWrap = document.querySelector(".pre_loader_wrap");
-        if (preLoaderWrap) gsap.set(preLoaderWrap, { display: "none" });
+        let preloader = document.querySelector(".preloader-overlay");
+        if (preloader) preloader.remove(); // Ensure preloader is removed on error
     }
 });
+
