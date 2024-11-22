@@ -1,111 +1,123 @@
-window.onload = function () {
-  const tl = gsap.timeline();
+document.addEventListener("DOMContentLoaded", function () {
+  // Create a timeline
+  const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
-  // Initialize SplitType with word-based split for .h-h1
-  let h1Split = new SplitType('.h-h1', { types: 'words' });
+  // Helper function for viewport checks
+  function isMobile() {
+    return window.innerWidth <= 768;
+  }
 
-  // Ensure text starts hidden
-  gsap.set(h1Split.words, { opacity: 0 });
-  gsap.set(".block_support", { opacity: 0, y: 20 }); // Start .block_support elements hidden and offset by 20px
+  // Initialize SplitType only for desktop and tablet
+  let h1Split;
+  if (!isMobile()) {
+    h1Split = new SplitType(".h-h1", { types: "words" });
+    gsap.set(h1Split.words, { opacity: 0 }); // Hide words initially
+    gsap.set(".block_support", { opacity: 0, y: 20 }); // Hide and offset support text
+  }
 
-  // Counter animation
+  // Set initial styles for the triangle
+  gsap.set(".spline_triangle", { opacity: 0, y: 200 });
+
+  // Preloader Animation
   tl.to({}, {
     duration: 1.5,
     onUpdate: function () {
-      document.querySelector('#counter').textContent = Math.round(this.progress() * 100) + '%';
-    }
+      document.querySelector("#counter").textContent =
+        Math.round(this.progress() * 100) + "%";
+    },
   });
 
-  // Fade-in main elements
-  tl.to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo"], {
-    opacity: 1,
-    duration: 0.3,
-    ease: "power2.out"
-  }, "+=0.5")
-    .to("#line-left", { x: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, "<")
-    .to("#line-right", { x: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, "<");
-
-  // Fade-out pre-loader elements and animate loader column 02
-  tl.to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo", "#line-left", "#line-right"], {
-    opacity: 0,
-    duration: 0.5,
-    ease: "power4.out"
-  }, "+=0.1");
-
-  // Removed `.top_wrap .loader_col_01` animation completely as per your request
-  // Continue with other animations
-
-  if (window.innerWidth > 768) { // Tablet and desktop only
+  // Desktop/Tablet Preloader Columns Animation
+  if (!isMobile()) {
     tl.to(".top_wrap .loader_col_02", {
       y: "-100%",
       transformOrigin: "bottom center",
       stagger: { amount: 0.2, from: "center" },
       duration: 0.6,
-      ease: "power3.out"
-    }, "<");
+    });
 
-    tl.to(".bottom_wrap .loader_col_02", {
-      y: "100%",
-      transformOrigin: "top center",
-      stagger: { amount: 0.2, from: "center" },
-      duration: 0.6,
-      ease: "power3.out",
-      onComplete: () => {
-        gsap.set(".pre_loader_wrap", { display: "none" });
-      }
-    }, "<");
+    tl.to(
+      ".bottom_wrap .loader_col_02",
+      {
+        y: "100%",
+        transformOrigin: "top center",
+        stagger: { amount: 0.2, from: "center" },
+        duration: 0.6,
+        onComplete: () => {
+          gsap.set(".pre_loader_wrap", { display: "none" });
+        },
+      },
+      "<"
+    );
   } else {
-    // On mobile, simply hide the pre-loader for better performance
+    // For mobile, hide preloader without animation
     gsap.set(".pre_loader_wrap", { display: "none" });
   }
 
-  // Flicker effect for .h-h1 (words) for desktop and tablet only
-  if (window.innerWidth > 768) { // Tablet and desktop only
-    tl.to(h1Split.words, {
-      opacity: 1,
-      duration: 1.2,
-      ease: "power1.out",
-      stagger: { amount: 0.5, from: "random" }
-    }, "<");
-  }
-
-  // Staggered reveal for .block_support elements (three lines of text)
-  tl.to(".block_support", {
-    opacity: 1,
-    y: 0,                // Move to final position
-    duration: 0.8,
-    ease: "power1.out",
-    stagger: 0.3       // Stagger each line sequentially
-  }, "<");
-
-  // Spline triangle animation for all devices
+  // Triangle Animation (For all devices)
   tl.from(".spline_triangle", {
     opacity: 0,
     y: 200,
     duration: 2,
-    ease: "power4.inOut"  // Ultra-smooth ease
-  }, "<");
+    ease: "power4.inOut",
+  });
 
-  // Button reveal animation for #shiny-cta
-  tl.from("#shiny-cta", {
-    opacity: 0,
-    scale: 0.9,
-    duration: 1.2,
-    ease: "power2.out"
-  }, "<");
+  // Desktop/Tablet Animations
+  if (!isMobile()) {
+    // Flicker effect for words
+    tl.to(
+      h1Split.words,
+      {
+        opacity: 1,
+        duration: 1.2,
+        ease: "power1.out",
+        stagger: { amount: 0.5, from: "random" },
+      },
+      "<"
+    );
 
-  // Navbar animation with a 0.2s delay
-  tl.from(".nav", {
-    y: -50,
-    opacity: 0,
-    duration: 0.75,
-    ease: "power4.out"
-  }, "+=0.01");
+    // Staggered reveal for .block_support
+    tl.to(
+      ".block_support",
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.3,
+      },
+      "<"
+    );
 
-  // New Animation for arrow_container after nav animation
-  tl.from(".arrow_container", {
-    opacity: 0,
-    duration: 1.2,
-    ease: "power4.out"
-  }, "+=0.2");  // Starts 0.2s after nav animation
-};
+    // Button animation
+    tl.from(
+      "#shiny-cta",
+      {
+        opacity: 0,
+        scale: 0.9,
+        duration: 1.2,
+      },
+      "<"
+    );
+
+    // Navbar reveal
+    tl.from(
+      ".nav",
+      {
+        y: -50,
+        opacity: 0,
+        duration: 0.75,
+      },
+      "+=0.1"
+    );
+
+    // Arrow container reveal
+    tl.from(
+      ".arrow_container",
+      {
+        opacity: 0,
+        duration: 1.2,
+      },
+      "+=0.2"
+    );
+  }
+});
