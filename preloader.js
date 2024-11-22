@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("Preloader script started");
 
         let preLoaderWrap = document.querySelector(".pre_loader_wrap"),
+            headerText = document.querySelector(".h-h1"),
             counter = document.querySelector("#counter");
 
         if (!preLoaderWrap) {
@@ -13,16 +14,16 @@ document.addEventListener("DOMContentLoaded", function () {
         // GSAP MatchMedia for animations on different breakpoints
         const mm = gsap.matchMedia();
 
-        // Preloader Animation: Minimal for all breakpoints
-        const tl = gsap.timeline({
+        // Preloader Timeline (shared across all breakpoints)
+        const preloaderTimeline = gsap.timeline({
             onComplete: function () {
                 console.log("Preloader animation completed");
                 preLoaderWrap.style.display = "none"; // Hide preloader after animation
             }
         });
 
-        // Animate the preloader counter
-        tl.to({}, {
+        // Counter Animation
+        preloaderTimeline.to({}, {
             duration: 1.5,
             onUpdate: function () {
                 if (counter) {
@@ -32,19 +33,46 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Fade out preloader
-        tl.to(preLoaderWrap, {
-            opacity: 0,
-            duration: 0.8,
+        // Bottom Column Animation (no top columns)
+        preloaderTimeline.to(".bottom_wrap .loader_col_01", {
+            scaleY: 0,
+            transformOrigin: "top center",
+            stagger: { amount: 0.2, from: "center" },
+            duration: 0.5,
+            ease: "power3.out"
+        })
+        .to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo"], {
+            opacity: 1,
+            duration: 0.3,
             ease: "power2.out"
-        });
+        }, "+=0.5")
+        .to("#line-left", { x: 0, opacity: 0.7, duration: 0.6, ease: "power2.out" }, "<")
+        .to("#line-right", { x: 0, opacity: 0.7, duration: 0.6, ease: "power2.out" }, "<")
+        .to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo", "#line-left", "#line-right"], {
+            opacity: 0,
+            duration: 0.5,
+            ease: "power4.out"
+        }, "+=0.1")
+        .to(".top_wrap .loader_col_02", {
+            y: "-100%",
+            transformOrigin: "bottom center",
+            stagger: { amount: 0.2, from: "center" },
+            duration: 0.6,
+            ease: "power3.out"
+        })
+        .to(".bottom_wrap .loader_col_02", {
+            y: "100%",
+            transformOrigin: "top center",
+            stagger: { amount: 0.2, from: "center" },
+            duration: 0.6,
+            ease: "power3.out"
+        }, "<");
 
         // Desktop and Tablet Animations (width >= 768px)
         mm.add("(min-width: 768px)", () => {
             console.log("Running desktop animations");
 
             // Split text animation for h-h1
-            let headerText = document.querySelector(".h-h1");
             if (headerText) {
                 let splitText = new SplitType(".h-h1", { types: "words" });
                 gsap.set(splitText.words, { opacity: 0 });
@@ -72,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.warn("Preloader forced to hide after timeout");
                 gsap.set(preLoaderWrap, { display: "none" });
             }
-        }, 8000); // Reduce timeout to 8 seconds
+        }, 8000); // Reduced timeout to 8 seconds for better performance
     } catch (error) {
         console.error("Error in preloader script:", error);
         let preLoaderWrap = document.querySelector(".pre_loader_wrap");
