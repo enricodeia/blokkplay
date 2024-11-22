@@ -11,13 +11,17 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        let splitText = headerText ? new SplitType(".h-h1", { types: "words" }) : null;
-        if (splitText) gsap.set(splitText.words, { opacity: 0 });
+        // Prevent visual glitches by hiding elements initially
+        gsap.set(preLoaderWrap, { visibility: "visible" });
+        if (headerText) {
+            let splitText = new SplitType(".h-h1", { types: "words" });
+            gsap.set(splitText.words, { opacity: 0 });
+        }
         gsap.set(".block_support", { opacity: 0, y: 20 });
 
         let tl = gsap.timeline();
 
-        // Counter animation
+        // Smoothly animate counter
         tl.to({}, {
             duration: 1.5,
             onUpdate: function () {
@@ -28,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Remaining animations after removing `.top_pre_loader` and `.loader_col_01`
+        // Smooth animations for visible elements
         tl.to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo"], { opacity: 1, duration: 0.3, ease: "power2.out" }, "+=0.5")
             .to("#line-left", { x: 0, opacity: 0.7, duration: 0.6, ease: "power2.out" }, "<")
             .to("#line-right", { x: 0, opacity: 0.7, duration: 0.6, ease: "power2.out" }, "<")
@@ -39,8 +43,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 gsap.set(".pre_loader_wrap", { display: "none" });
             } }, "<");
 
-        // Split text animation
-        if (splitText) {
+        if (headerText) {
+            let splitText = new SplitType(".h-h1", { types: "words" });
             tl.to(splitText.words, { opacity: 1, duration: 1.2, ease: "power1.out", stagger: { amount: 0.5, from: "random" } }, "<");
         }
 
@@ -51,7 +55,14 @@ document.addEventListener("DOMContentLoaded", function () {
             .from(".nav", { y: -50, opacity: 0, duration: 0.75, ease: "power4.out" }, "+=0.01")
             .from(".arrow_container", { opacity: 0, duration: 1.2, ease: "power4.out" }, "+=0.2");
 
-        // Timeout to hide preloader forcibly
+        // Ensure animations sync with loaded assets
+        window.addEventListener("load", () => {
+            setTimeout(() => {
+                ScrollTrigger.refresh();
+            }, 1500); // Recalculate layout after 1.5s
+        });
+
+        // Timeout to hide preloader if animation doesn't complete
         setTimeout(() => {
             if (preLoaderWrap.style.display !== "none") {
                 console.warn("Preloader forced to hide after timeout");
