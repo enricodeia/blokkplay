@@ -66,8 +66,8 @@ document.addEventListener('DOMContentLoaded', function () {
         { opacity: 1, duration: 0.3, ease: 'power2.out' },
         '+=0.5'
       )
-      .to('#line-left', { x: 0, opacity: 1, duration: 0.6, ease: 'power2.out' }, '<')
-      .to('#line-right', { x: 0, opacity: 1, duration: 0.6, ease: 'power2.out' }, '<')
+      .to('#line-left', { x: 0, opacity: 0.7, duration: 0.6, ease: 'power2.out' }, '<')
+      .to('#line-right', { x: 0, opacity: 0.7, duration: 0.6, ease: 'power2.out' }, '<')
       .to(
         ['#counter', '.loading_text', '.blokkplay_logo', '.lottie_logo', '#line-left', '#line-right'],
         { opacity: 0, duration: 0.5, ease: 'power4.out' },
