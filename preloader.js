@@ -1,24 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Create a timeline
   const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
-  // Helper function for viewport checks
+  // Helper function to detect mobile
   function isMobile() {
     return window.innerWidth <= 768;
   }
 
-  // Initialize SplitType only for desktop and tablet
-  let h1Split;
-  if (!isMobile()) {
-    h1Split = new SplitType(".h-h1", { types: "words" });
-    gsap.set(h1Split.words, { opacity: 0 }); // Hide words initially
-    gsap.set(".block_support", { opacity: 0, y: 20 }); // Hide and offset support text
-  }
-
-  // Set initial styles for the triangle
-  gsap.set(".spline_triangle", { opacity: 0, y: 200 });
-
-  // Preloader Animation
+  // Preloader: Counter Animation (Always Active)
   tl.to({}, {
     duration: 1.5,
     onUpdate: function () {
@@ -27,34 +15,29 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   });
 
-  // Desktop/Tablet Preloader Columns Animation
-  if (!isMobile()) {
-    tl.to(".top_wrap .loader_col_02", {
-      y: "-100%",
-      transformOrigin: "bottom center",
+  // Preloader Column Animations (Always Visible)
+  tl.to(".top_wrap .loader_col_02", {
+    y: "-100%",
+    transformOrigin: "bottom center",
+    stagger: { amount: 0.2, from: "center" },
+    duration: 0.6,
+  });
+
+  tl.to(
+    ".bottom_wrap .loader_col_02",
+    {
+      y: "100%",
+      transformOrigin: "top center",
       stagger: { amount: 0.2, from: "center" },
       duration: 0.6,
-    });
-
-    tl.to(
-      ".bottom_wrap .loader_col_02",
-      {
-        y: "100%",
-        transformOrigin: "top center",
-        stagger: { amount: 0.2, from: "center" },
-        duration: 0.6,
-        onComplete: () => {
-          gsap.set(".pre_loader_wrap", { display: "none" });
-        },
+      onComplete: () => {
+        gsap.set(".pre_loader_wrap", { display: "none" });
       },
-      "<"
-    );
-  } else {
-    // For mobile, hide preloader without animation
-    gsap.set(".pre_loader_wrap", { display: "none" });
-  }
+    },
+    "<"
+  );
 
-  // Triangle Animation (For all devices)
+  // Triangle Animation (Always Active)
   tl.from(".spline_triangle", {
     opacity: 0,
     y: 200,
@@ -62,9 +45,14 @@ document.addEventListener("DOMContentLoaded", function () {
     ease: "power4.inOut",
   });
 
-  // Desktop/Tablet Animations
+  // Desktop and Tablet Animations
   if (!isMobile()) {
-    // Flicker effect for words
+    // Initialize SplitType for .h-h1
+    const h1Split = new SplitType(".h-h1", { types: "words" });
+    gsap.set(h1Split.words, { opacity: 0 });
+    gsap.set(".block_support", { opacity: 0, y: 20 });
+
+    // Flicker effect for h1 words
     tl.to(
       h1Split.words,
       {
