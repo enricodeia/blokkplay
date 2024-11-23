@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
           preloaderTimeline.to(".block_support", {
             opacity: 1,
             y: 0,
-            duration: 0.8,
+            duration: 1.2,
             ease: "power1.out",
             stagger: 0.3
           }, "<");
@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
           // Spline triangle animation
           preloaderTimeline.from(".spline_triangle", {
             opacity: 0,
-            y: 200,
+            y: 100,
             duration: 2,
             ease: "power4.inOut"
           }, "<");
@@ -116,9 +116,9 @@ document.addEventListener("DOMContentLoaded", function () {
           preloaderTimeline.from(".nav", {
             y: -50,
             opacity: 0,
-            duration: 0.75,
+            duration: 1.5,
             ease: "power4.out"
-          }, "+=0.01");
+          }, "<");
         }
       });
 
