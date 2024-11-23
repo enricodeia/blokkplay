@@ -1,4 +1,4 @@
- document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
     try {
       console.log("Preloader script started");
 
@@ -85,7 +85,7 @@
             duration: 1.2,
             ease: "power1.out",
             stagger: { amount: 0.5, from: "random" }
-          }, "+=0.5");
+          }, "<");
 
           // Staggered reveal for `.block_support` elements
           preloaderTimeline.to(".block_support", {
@@ -94,6 +94,14 @@
             duration: 0.8,
             ease: "power1.out",
             stagger: 0.3
+          }, "<");
+
+          // Button reveal animation for `#shiny-cta`
+          preloaderTimeline.from("#shiny-cta", {
+            opacity: 0,
+            scale: 0.9,
+            duration: 1.2,
+            ease: "power2.out"
           }, "<");
 
           // Spline triangle animation
@@ -118,7 +126,7 @@
       matchMedia.add("(max-width: 767px)", () => {
         console.log("Skipping additional animations on mobile");
 
-        // Ensure .h-h1 is visible on mobile without animations
+        // Ensure .h-h1 and .block_support are visible without animations
         gsap.set(".h-h1", { opacity: 1 });
         gsap.set(".block_support", { opacity: 1, y: 0 }); // Immediately visible without animations
       });
