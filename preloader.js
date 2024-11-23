@@ -23,29 +23,24 @@ document.addEventListener("DOMContentLoaded", function () {
         },
       });
 
-      // Counter animation
-      preloaderTimeline.to({}, {
-        duration: 1.5,
-        onUpdate: function () {
-          if (counter) {
-            let progress = Math.round(100 * this.progress());
-            counter.textContent = `${progress}%`;
-          }
-        },
-      });
-
-      // Fade-in elements
+      // Core preloader animations
       preloaderTimeline
+        .to({}, {
+          duration: 1.5,
+          onUpdate: function () {
+            if (counter) {
+              let progress = Math.round(100 * this.progress());
+              counter.textContent = `${progress}%`;
+            }
+          },
+        })
         .to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo"], {
           opacity: 1,
           duration: 0.3,
           ease: "power2.out"
         }, "+=0.5")
         .to("#line-left", { x: 0, opacity: 0.7, duration: 0.6, ease: "power2.out" }, "<")
-        .to("#line-right", { x: 0, opacity: 0.7, duration: 0.6, ease: "power2.out" }, "<");
-
-      // Fade-out elements
-      preloaderTimeline
+        .to("#line-right", { x: 0, opacity: 0.7, duration: 0.6, ease: "power2.out" }, "<")
         .to(["#counter", ".loading_text", ".blokkplay_logo", ".lottie_logo", "#line-left", "#line-right"], {
           opacity: 0,
           duration: 0.5,
@@ -66,17 +61,54 @@ document.addEventListener("DOMContentLoaded", function () {
           ease: "power3.out"
         }, "<");
 
-      // Add desktop-specific animations
+      // Desktop-specific animations, executed sequentially after core animations
       matchMedia.add("(min-width: 768px)", () => {
         console.log("Running desktop animations");
 
         if (headerH1) {
-          // Ensure .h-h1 starts visible without additional effects
-          gsap.set(headerH1, { opacity: 1 });
+          // Initialize SplitType
+          let h1Split = new SplitType(".h-h1", { types: "words" });
+
+          // Ensure text starts hidden
+          gsap.set(h1Split.words, { opacity: 0 });
+
+          // Create a separate timeline for desktop animations and start after the core timeline completes
+          gsap.timeline()
+            .to(h1Split.words, {
+              opacity: 1,
+              duration: 1.2,
+              ease: "power1.out",
+              stagger: { amount: 0.5, from: "random" }
+            }, "+=0.5") // Starts after preloader timeline completes
+            .to(".block_support", {
+              opacity: 1,
+              y: 0,
+              duration: 0.8,
+              ease: "power1.out",
+              stagger: 0.3
+            }, "<") // Synchronized with the previous animation
+            .from(".spline_triangle", {
+              opacity: 0,
+              y: 200,
+              duration: 2,
+              ease: "power4.inOut"
+            }, "<")
+            .from("#shiny-cta", {
+              opacity: 0,
+              scale: 0.9,
+              duration: 1.2,
+              ease: "power2.out"
+            }, "<")
+            .from(".nav", {
+              y: -50,
+              opacity: 0,
+              duration: 0.75,
+              ease: "power4.out"
+            }, "+=0.01");
         }
       });
 
-      // Add mobile-specific animations
+      // Mobile-specific animations
       matchMedia.add("(max-width: 767px)", () => {
         console.log("Skipping additional animations on mobile");
 
