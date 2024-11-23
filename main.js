@@ -1,239 +1,195 @@
 // Unified Script File for Multiple Canvas Animations and Effects
 
 document.addEventListener("DOMContentLoaded", function() {
-  // ==============================
-  // Three.js Dots Animation (Interactive Grid Effect)
-  // ==============================
-  (function () {
-    if (typeof THREE === "undefined") {
-      console.error("Three.js is not loaded. Please include Three.js in your HTML.");
-      return;
-    }
 
-    const DOT_SIZE = 1;
-    const GAP = 50;
-    const INTERACT_RADIUS = 400;
-    const BASE_COLOR = { r: 90, g: 90, b: 90 };
-    const BRIGHT_COLOR = { r: 133, g: 100, b: 250 };
-    const WHITE_COLOR = { r: 200, g: 200, b: 200 };
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.OrthographicCamera(
-      window.innerWidth / -2,
-      window.innerWidth / 2,
-      window.innerHeight / 2,
-      window.innerHeight / -2,
-      -1000,
-      1000
-    );
-    camera.position.z = 1;
-
-    const renderer = new THREE.WebGLRenderer({
-      canvas: document.getElementById("dots-canvas"),
-      antialias: true,
-      alpha: true,
+  // ==================== SplitText Initialization ====================
+  let splitText;
+  function runSplit() {
+    splitText = new SplitType("[stagger-link]", {
+      types: "words, chars" // Split the text into words and characters
     });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+  }
+  runSplit();
 
-    function generateGrid(width, height, gap) {
-      const positions = [];
-      for (let x = -width / 2; x <= width / 2; x += gap) {
-        for (let y = -height / 2; y <= height / 2; y += gap) {
-          positions.push(x, y, 0);
-        }
-      }
-      return new Float32Array(positions);
+  // Reinitialize SplitType on Window Resize
+  let windowWidth = window.innerWidth;
+  window.addEventListener("resize", function () {
+    if (windowWidth !== window.innerWidth) {
+      windowWidth = window.innerWidth;
+      splitText.revert();
+      runSplit();
     }
+  });
 
-    const bgGeometry = new THREE.BufferGeometry();
-    bgGeometry.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(generateGrid(window.innerWidth, window.innerHeight, GAP), 3)
-    );
-    const bgMaterial = new THREE.PointsMaterial({
-      color: `rgb(${BASE_COLOR.r},${BASE_COLOR.g},${BASE_COLOR.b})`,
-      size: DOT_SIZE,
-      sizeAttenuation: false,
-      transparent: true,
-    });
-    const backgroundPoints = new THREE.Points(bgGeometry, bgMaterial);
-    scene.add(backgroundPoints);
-
-    const interactiveGeometry = new THREE.BufferGeometry();
-    interactiveGeometry.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(generateGrid(window.innerWidth, window.innerHeight, GAP), 3)
-    );
-
-    const interactiveMaterial = new THREE.ShaderMaterial({
-      uniforms: {
-        u_mouse: { value: new THREE.Vector2(-2000, -2000) },
-        u_time: { value: 0.0 },
-        u_interactionRadius: { value: INTERACT_RADIUS },
-        u_intensity: { value: 0.0 },
-      },
-      vertexShader: `
-        precision mediump float;
-        uniform vec2 u_mouse;
-        uniform float u_time;
-        uniform float u_interactionRadius;
-        varying float v_distance;
-        void main() {
-          vec2 pos = position.xy;
-          float distance = length(pos - u_mouse);
-          v_distance = distance;
-          float size = mix(${DOT_SIZE.toFixed(1)}, 16.0, 1.0 - smoothstep(0.0, u_interactionRadius, distance));
-          size *= 1.0 + 0.3 * sin(u_time * 2.0 + distance * 0.02);
-          gl_PointSize = size;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        precision mediump float;
-        varying float v_distance;
-        uniform vec2 u_mouse;
-        uniform float u_interactionRadius;
-        uniform float u_intensity;
-        void main() {
-          float normalizedDistance = smoothstep(0.0, u_interactionRadius, v_distance);
-          vec3 centerColor = vec3(${BRIGHT_COLOR.r / 255.0}, ${BRIGHT_COLOR.g / 255.0}, ${BRIGHT_COLOR.b / 255.0});
-          vec3 outerColor = vec3(${WHITE_COLOR.r / 255.0}, ${WHITE_COLOR.g / 255.0}, ${WHITE_COLOR.b / 255.0});
-          vec3 color = mix(centerColor, outerColor, normalizedDistance);
-          color = pow(color, vec3(1.2));
-          float alpha = 1.0 - smoothstep(0.3, 0.5, length(gl_PointCoord - vec2(0.5)));
-          gl_FragColor = vec4(color, alpha);
-        }
-      `,
-      transparent: true,
-      blending: THREE.AdditiveBlending,
-      depthTest: false,
-    });
-
-    const interactivePoints = new THREE.Points(interactiveGeometry, interactiveMaterial);
-    scene.add(interactivePoints);
-
-    let targetMouse = new THREE.Vector2(-2000, -2000);
-    const delayFactor = 0.05;
-    const intensityFadeSpeed = 2.0;
-    const clock = new THREE.Clock();
-    let targetIntensity = 0.0;
-    let lastMouseMove = Date.now();
-
-    // Resize handler
-    function resizeScene() {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-
-      // Update camera
-      camera.left = width / -2;
-      camera.right = width / 2;
-      camera.top = height / 2;
-      camera.bottom = height / -2;
-      camera.updateProjectionMatrix();
-
-      // Update renderer size
-      renderer.setSize(width, height);
-
-      // Update grid positions
-      const newPositions = generateGrid(width, height, GAP);
-      backgroundPoints.geometry.setAttribute(
-        "position",
-        new THREE.Float32BufferAttribute(newPositions, 3)
-      );
-      backgroundPoints.geometry.attributes.position.needsUpdate = true;
-      interactivePoints.geometry.setAttribute(
-        "position",
-        new THREE.Float32BufferAttribute(newPositions, 3)
-      );
-      interactivePoints.geometry.attributes.position.needsUpdate = true;
-    }
-
-    document.addEventListener("mousemove", (e) => {
-      const mouseX = e.clientX - window.innerWidth / 2;
-      const mouseY = -(e.clientY - window.innerHeight / 2);
-      targetMouse.set(mouseX, mouseY);
-      targetIntensity = 1.0;
-      lastMouseMove = Date.now();
-    });
-
-    document.getElementById("dots-canvas").addEventListener("mouseleave", () => {
-      targetIntensity = 0.0;
-    });
-
-    function update(delta) {
-      const now = Date.now();
-      if (now - lastMouseMove > 1500) {
-        interactiveMaterial.uniforms.u_interactionRadius.value +=
-          (DOT_SIZE * 50 - interactiveMaterial.uniforms.u_interactionRadius.value) * Math.min(0.5 * delta, 1.0);
-      } else {
-        interactiveMaterial.uniforms.u_interactionRadius.value +=
-          (INTERACT_RADIUS - interactiveMaterial.uniforms.u_interactionRadius.value) * Math.min(0.5 * delta, 1.0);
-      }
-
-      interactiveMaterial.uniforms.u_mouse.value.lerp(targetMouse, delayFactor);
-      interactiveMaterial.uniforms.u_intensity.value +=
-        (targetIntensity - interactiveMaterial.uniforms.u_intensity.value) * Math.min(intensityFadeSpeed * delta, 1.0);
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-      const delta = clock.getDelta();
-      interactiveMaterial.uniforms.u_time.value += delta;
-      update(delta);
-      renderer.render(scene, camera);
-    }
-
-    window.addEventListener("resize", resizeScene);
-    resizeScene(); // Initial resize
-    animate(); // Start animation loop
-  })();
-
-  // ==============================
-  // Hero Button Effect
-  // ==============================
-  (function () {
-    const mm = gsap.matchMedia();
-
-    // Button hover animations for desktop and tablet (non-mobile)
-    mm.add("(min-width: 769px)", () => {
-      const btn = document.querySelector(".button_wrap");
-
-      // Ensure the element exists
-      if (!btn) {
-        console.warn("Element '.button_wrap' not found. Skipping hover animations.");
-        return;
-      }
-
-      // Add hover animations
-      btn.addEventListener("mouseenter", () => {
-        gsap.to(btn, {
-          scale: 0.9,
-          duration: 0.6,
-          ease: "power2.out",
-        });
+  // ==================== Hover Animation for Stagger Links ====================
+  const staggerLinks = document.querySelectorAll("[stagger-link]");
+  staggerLinks.forEach((link) => {
+    const letters = link.querySelectorAll("[stagger-link-text] .char");
+    link.addEventListener("mouseenter", () => {
+      gsap.to(letters, {
+        yPercent: -100,
+        duration: 0.5,
+        ease: "power4.inOut",
+        stagger: { each: 0.03, from: "start" },
+        overwrite: "auto"
       });
+    });
+    link.addEventListener("mouseleave", () => {
+      gsap.to(letters, {
+        yPercent: 0,
+        duration: 0.4,
+        ease: "power4.inOut",
+        stagger: { each: 0.03, from: "random" },
+        overwrite: "auto"
+      });
+    });
+  });
 
-      btn.addEventListener("mouseleave", () => {
-        gsap.to(btn, {
+  // ==================== Menu Button Hover and Click Animations ====================
+  const menuButton = document.querySelector('.menu');
+  if (menuButton) {
+    const menuState = {
+      HOVER: "hover",
+      CLICK: "click"
+    };
+
+    gsap.set(".menu", { backgroundColor: "rgba(45, 57, 72, 0.8)" });
+    gsap.set(".text_close_wrap", { opacity: 0, scale: 0.7 });
+
+    menuButton.addEventListener("mouseenter", () => {
+      if (menuButton.getAttribute("data-menu-state") === menuState.HOVER) {
+        gsap.to(".menu", {
+          scale: 0.95,
+          backgroundColor: "rgba(213, 220, 237, 1)",
+          duration: 0.3,
+          ease: "power2.out"
+        });
+        gsap.to(".menu_text.is--in .letter_menu", {
+          y: -20,
+          opacity: 0,
+          stagger: 0.08,
+          duration: 0.6,
+          ease: "power4.out"
+        });
+        gsap.fromTo(".menu_text.is--out .letter_menu",
+          { y: 20, opacity: 0 },
+          { y: 0, opacity: 1, stagger: 0.08, duration: 0.6, ease: "power4.out", delay: 0.15 }
+        );
+      }
+    });
+
+    menuButton.addEventListener("mouseleave", () => {
+      if (menuButton.getAttribute("data-menu-state") === menuState.HOVER) {
+        gsap.to(".menu", {
           scale: 1,
-          duration: 0.6,
-          ease: "power2.out",
+          backgroundColor: "rgba(45, 57, 72, 0.8)",
+          duration: 0.3,
+          ease: "power2.out"
         });
-      });
-
-      // Infinite background animation
-      gsap.to(".button_wrap", {
-        backgroundPosition: "100% 100%",
-        repeat: -1,
-        duration: 10,
-        ease: "linear",
-      });
+        gsap.to(".menu_text.is--in .letter_menu", {
+          y: 0,
+          opacity: 1,
+          stagger: 0.08,
+          duration: 0.6,
+          ease: "power4.out"
+        });
+        gsap.to(".menu_text.is--out .letter_menu", {
+          y: 20,
+          opacity: 0,
+          stagger: 0.08,
+          duration: 0.6,
+          ease: "power4.out"
+        });
+      }
     });
 
-    // Behavior for mobile (animations disabled)
-    mm.add("(max-width: 768px)", () => {
-      console.log("Button animations disabled for mobile.");
+    menuButton.addEventListener("click", () => {
+      if (menuButton.getAttribute("data-menu-state") === menuState.HOVER) {
+        menuButton.setAttribute("data-menu-state", menuState.CLICK);
+        gsap.to(".menu", { backgroundColor: "rgba(0, 0, 0, 0.1)", duration: 0.5, ease: "power2.out" });
+        gsap.to(".text_menu_wrap", { opacity: 0, duration: 0.3 });
+        gsap.fromTo(".text_close_wrap",
+          { opacity: 0, scale: 0.7 },
+          { opacity: 1, scale: 1, duration: 0.5, ease: "power4.out", delay: 0.1 }
+        );
+      } else {
+        closeMenuAnimation();
+      }
     });
-  })();
+
+    function closeMenuAnimation() {
+      menuButton.setAttribute("data-menu-state", menuState.HOVER);
+      gsap.to(".menu", { backgroundColor: "rgba(45, 57, 72, 0.8)", duration: 0.5, ease: "power2.out" });
+      gsap.to(".text_close_wrap", { opacity: 0, scale: 0.7, duration: 0.3 });
+      gsap.to(".text_menu_wrap", { opacity: 1, duration: 0.3, delay: 0.9 });
+      gsap.to(".menu_text.is--in .letter_menu", {
+        y: 0,
+        opacity: 1,
+        stagger: 0.08,
+        duration: 0.6,
+        ease: "power4.out",
+        delay: 0.9
+      });
+      gsap.to(".menu_text.is--out .letter_menu", {
+        y: 20,
+        opacity: 0,
+        stagger: 0.08,
+        duration: 0.6,
+        ease: "power4.out",
+        delay: 0.9
+      });
+    }
+
+    document.querySelectorAll('.link_container').forEach(link => {
+      link.addEventListener("click", () => {
+        if (menuButton.getAttribute("data-menu-state") === menuState.CLICK) {
+          closeMenuAnimation();
+        }
+      });
+    });
+  }
+
+  // ==================== Menu Trigger Animation ====================
+  const menuTimeline = gsap.timeline({ paused: true, reversed: true });
+  menuTimeline
+    .set(".overlay_menu", { display: "block", visibility: "visible" })
+    .fromTo(".menu_row", 
+      { x: "-100%" }, 
+      { x: "0%", duration: 0.3, ease: "power4.out", stagger: { amount: 0.2, from: "random" } }
+    )
+    .from(".h-h1[data-stagger-menu]", 
+      { y: 100, opacity: 0, duration: 0.4, stagger: 0.1, ease: "power4.out" }
+    )
+    .from(".paragraph[data-deco-menu]", 
+      { y: -100, opacity: 0, duration: 0.5, ease: "power4.out" }, "<")
+    .fromTo(".social_block", 
+      { opacity: 0, scale: 0.1 }, { opacity: 1, scale: 1, duration: 0.5, stagger: 0.2, ease: "power4.out" }, "<")
+    .fromTo(".menu_spline_wrap", 
+      { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 1, ease: "power4.out" }, "<")
+    .from(".btn_block", 
+      { opacity: 0, y: 30, duration: 0.4, stagger: 0.3, ease: "power4.out" }, "<")
+    .from(".button_divider_wrap", 
+      { opacity: 0, duration: 0.4, stagger: 0.2, ease: "power4.out" }, "<");
+
+  document.querySelector(".menu").addEventListener("click", function () {
+    if (menuTimeline.reversed()) {
+      gsap.set(".overlay_menu", { display: "block" });
+      menuTimeline.play();
+    } else {
+      menuTimeline.reverse().then(() => {
+        gsap.set(".overlay_menu", { display: "none" });
+      });
+    }
+  });
+
+  document.querySelectorAll(".link_container").forEach(link => {
+    link.addEventListener("click", function () {
+      if (!menuTimeline.reversed()) {
+        menuTimeline.reverse().then(() => {
+          gsap.set(".overlay_menu", { display: "none" });
+        });
+      }
+    });
+  });
 });
+
