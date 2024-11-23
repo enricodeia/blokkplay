@@ -188,4 +188,52 @@ document.addEventListener("DOMContentLoaded", function() {
     resizeScene(); // Initial resize
     animate(); // Start animation loop
   })();
+
+  // ==============================
+  // Hero Button Effect
+  // ==============================
+  (function () {
+    const mm = gsap.matchMedia();
+
+    // Button hover animations for desktop and tablet (non-mobile)
+    mm.add("(min-width: 769px)", () => {
+      const btn = document.querySelector(".button_wrap");
+
+      // Ensure the element exists
+      if (!btn) {
+        console.warn("Element '.button_wrap' not found. Skipping hover animations.");
+        return;
+      }
+
+      // Add hover animations
+      btn.addEventListener("mouseenter", () => {
+        gsap.to(btn, {
+          scale: 0.9,
+          duration: 0.6,
+          ease: "power2.out",
+        });
+      });
+
+      btn.addEventListener("mouseleave", () => {
+        gsap.to(btn, {
+          scale: 1,
+          duration: 0.6,
+          ease: "power2.out",
+        });
+      });
+
+      // Infinite background animation
+      gsap.to(".button_wrap", {
+        backgroundPosition: "100% 100%",
+        repeat: -1,
+        duration: 10,
+        ease: "linear",
+      });
+    });
+
+    // Behavior for mobile (animations disabled)
+    mm.add("(max-width: 768px)", () => {
+      console.log("Button animations disabled for mobile.");
+    });
+  })();
 });
