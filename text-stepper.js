@@ -14,8 +14,8 @@ document.addEventListener("DOMContentLoaded", function () {
       ],
       tablet: [
         { start: "10%", end: "30%" }, // Step 1 for Tablet
-        { start: "35%", end: "55%" }, // Step 2 for Tablet
-        { start: "60%", end: "85%" }  // Step 3 for Tablet
+        { start: "35%", end: "58%" }, // Step 2 for Tablet
+        { start: "67%", end: "85%" }  // Step 3 for Tablet
       ],
       mobile: [
         { start: "6%", end: "25%" },  // Step 1 for Mobile
