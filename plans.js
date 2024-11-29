@@ -1,1 +1,114 @@
-document.addEventListener("DOMContentLoaded",function(){let t=document.querySelectorAll("#button");t.forEach(t=>{gsap.set(t.querySelectorAll(".button_text_in .button_block.is--in"),{y:0,opacity:1}),gsap.set(t.querySelectorAll(".button_text_out .button_block.is--out"),{y:20,opacity:0}),t.addEventListener("mouseenter",()=>{gsap.to(t.querySelectorAll(".button_text_in .button_block.is--in"),{y:-20,opacity:0,stagger:.05,duration:.2,ease:"power4.out"}),gsap.to(t.querySelectorAll(".button_text_out .button_block.is--out"),{y:0,opacity:1,stagger:.05,duration:.2,ease:"power4.out"}),gsap.to(t,{backgroundColor:"#964EFF",duration:.4,ease:"power2.out"})}),t.addEventListener("mouseleave",()=>{gsap.to(t.querySelectorAll(".button_text_in .button_block.is--in"),{y:0,opacity:1,stagger:.05,duration:.2,ease:"power4.out"}),gsap.to(t.querySelectorAll(".button_text_out .button_block.is--out"),{y:20,opacity:0,stagger:.05,duration:.2,ease:"power4.out"}),gsap.to(t,{backgroundColor:"#2f2f2f",duration:.4,ease:"power2.out"})})})}),gsap.matchMedia().add("(max-width: 767px)",()=>{let t=305,e=325,o=e+5,a=o+5,r=a+20,n=r+5,i=n+5;gsap.timeline({scrollTrigger:{trigger:"[cards-mobile]",start:"top top",end:"bottom bottom",scrub:!0}}).fromTo(".card.is--left",{opacity:1,display:"block"},{opacity:1,ease:"none"},"300%").to(".card.is--left",{opacity:0,ease:"none",onComplete:()=>$(".card.is--left").css("display","none"),onReverseComplete:()=>$(".card.is--left").css("display","block")},`${e}%`).fromTo(".card.is--center",{opacity:0,display:"none"},{opacity:1,ease:"none",onStart:()=>$(".card.is--center").css("display","block")},`${o}%`).to(".card.is--center",{opacity:1,ease:"none"},`${a}%`).to(".card.is--center",{opacity:0,ease:"none",onComplete:()=>$(".card.is--center").css("display","none"),onReverseComplete:()=>$(".card.is--center").css("display","block")},`${r}%`).fromTo(".card.is--right",{opacity:0,display:"none"},{opacity:1,ease:"none",onStart:()=>$(".card.is--right").css("display","block")},`${n}%`).to(".card.is--right",{opacity:1,ease:"none"},`${i}%`)});
+document.addEventListener("DOMContentLoaded", function () {
+    // Select all elements with the ID #button
+    let buttons = document.querySelectorAll("#button");
+
+    buttons.forEach(button => {
+        // Set initial states for button text animations
+        gsap.set(button.querySelectorAll(".button_text_in .button_block.is--in"), {
+            y: 0,
+            opacity: 1
+        });
+
+        gsap.set(button.querySelectorAll(".button_text_out .button_block.is--out"), {
+            y: 20,
+            opacity: 0
+        });
+
+        // Add hover (mouseenter) animation
+        button.addEventListener("mouseenter", () => {
+            gsap.to(button.querySelectorAll(".button_text_in .button_block.is--in"), {
+                y: -20,
+                opacity: 0,
+                stagger: 0.05,
+                duration: 0.2,
+                ease: "power4.out"
+            });
+
+            gsap.to(button.querySelectorAll(".button_text_out .button_block.is--out"), {
+                y: 0,
+                opacity: 1,
+                stagger: 0.05,
+                duration: 0.2,
+                ease: "power4.out"
+            });
+
+            gsap.to(button, {
+                backgroundColor: "#7742ff",
+                duration: 0.4,
+                ease: "power2.out"
+            });
+        });
+
+        // Add mouseleave animation
+        button.addEventListener("mouseleave", () => {
+            gsap.to(button.querySelectorAll(".button_text_in .button_block.is--in"), {
+                y: 0,
+                opacity: 1,
+                stagger: 0.05,
+                duration: 0.2,
+                ease: "power4.out"
+            });
+
+            gsap.to(button.querySelectorAll(".button_text_out .button_block.is--out"), {
+                y: 20,
+                opacity: 0,
+                stagger: 0.05,
+                duration: 0.2,
+                ease: "power4.out"
+            });
+
+            gsap.to(button, {
+                backgroundColor: "#2f2f2f",
+                duration: 0.4,
+                ease: "power2.out"
+            });
+        });
+    });
+
+    // Match media for max-width 767px
+    gsap.matchMedia().add("(max-width: 767px)", () => {
+        // Define percentage values for animations
+        let startLeft = 305;
+        let centerStart = 325;
+        let centerVisible = centerStart + 5;
+        let centerEnd = centerVisible + 5;
+        let rightStart = centerEnd + 20;
+        let rightVisible = rightStart + 5;
+        let rightEnd = rightVisible + 5;
+
+        // Scroll-triggered timeline for cards
+        gsap.timeline({
+            scrollTrigger: {
+                trigger: "[cards-mobile]",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: true
+            }
+        })
+        .fromTo(".card.is--left", { opacity: 1, display: "block" }, { opacity: 1, ease: "none" }, "300%")
+        .to(".card.is--left", {
+            opacity: 0,
+            ease: "none",
+            onComplete: () => $(".card.is--left").css("display", "none"),
+            onReverseComplete: () => $(".card.is--left").css("display", "block")
+        }, `${centerStart}%`)
+        .fromTo(".card.is--center", { opacity: 0, display: "none" }, {
+            opacity: 1,
+            ease: "none",
+            onStart: () => $(".card.is--center").css("display", "block")
+        }, `${centerVisible}%`)
+        .to(".card.is--center", { opacity: 1, ease: "none" }, `${centerEnd}%`)
+        .to(".card.is--center", {
+            opacity: 0,
+            ease: "none",
+            onComplete: () => $(".card.is--center").css("display", "none"),
+            onReverseComplete: () => $(".card.is--center").css("display", "block")
+        }, `${rightStart}%`)
+        .fromTo(".card.is--right", { opacity: 0, display: "none" }, {
+            opacity: 1,
+            ease: "none",
+            onStart: () => $(".card.is--right").css("display", "block")
+        }, `${rightVisible}%`)
+        .to(".card.is--right", { opacity: 1, ease: "none" }, `${rightEnd}%`);
+    });
+});
