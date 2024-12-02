@@ -3,6 +3,10 @@ document.addEventListener("DOMContentLoaded", function () {
     let buttons = document.querySelectorAll("#button");
 
     buttons.forEach(button => {
+        // Disable long-press default behaviors for better UX
+        button.addEventListener("contextmenu", e => e.preventDefault());
+        button.addEventListener("touchstart", e => e.preventDefault());
+
         // Set initial states for button text animations
         gsap.set(button.querySelectorAll(".button_text_in .button_block.is--in"), {
             y: 0,
@@ -16,52 +20,56 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Add hover (mouseenter) animation
         button.addEventListener("mouseenter", () => {
-            gsap.to(button.querySelectorAll(".button_text_in .button_block.is--in"), {
-                y: -20,
-                opacity: 0,
-                stagger: 0.05,
-                duration: 0.2,
-                ease: "power4.out"
-            });
+            if (!gsap.isTweening(button)) {
+                gsap.to(button.querySelectorAll(".button_text_in .button_block.is--in"), {
+                    y: -20,
+                    opacity: 0,
+                    stagger: 0.05,
+                    duration: 0.2,
+                    ease: "power4.out"
+                });
 
-            gsap.to(button.querySelectorAll(".button_text_out .button_block.is--out"), {
-                y: 0,
-                opacity: 1,
-                stagger: 0.05,
-                duration: 0.2,
-                ease: "power4.out"
-            });
+                gsap.to(button.querySelectorAll(".button_text_out .button_block.is--out"), {
+                    y: 0,
+                    opacity: 1,
+                    stagger: 0.05,
+                    duration: 0.2,
+                    ease: "power4.out"
+                });
 
-            gsap.to(button, {
-                backgroundColor: "#7742ff",
-                duration: 0.4,
-                ease: "power2.out"
-            });
+                gsap.to(button, {
+                    backgroundColor: "#7742ff",
+                    duration: 0.4,
+                    ease: "power2.out"
+                });
+            }
         });
 
         // Add mouseleave animation
         button.addEventListener("mouseleave", () => {
-            gsap.to(button.querySelectorAll(".button_text_in .button_block.is--in"), {
-                y: 0,
-                opacity: 1,
-                stagger: 0.05,
-                duration: 0.2,
-                ease: "power4.out"
-            });
+            if (!gsap.isTweening(button)) {
+                gsap.to(button.querySelectorAll(".button_text_in .button_block.is--in"), {
+                    y: 0,
+                    opacity: 1,
+                    stagger: 0.05,
+                    duration: 0.2,
+                    ease: "power4.out"
+                });
 
-            gsap.to(button.querySelectorAll(".button_text_out .button_block.is--out"), {
-                y: 20,
-                opacity: 0,
-                stagger: 0.05,
-                duration: 0.2,
-                ease: "power4.out"
-            });
+                gsap.to(button.querySelectorAll(".button_text_out .button_block.is--out"), {
+                    y: 20,
+                    opacity: 0,
+                    stagger: 0.05,
+                    duration: 0.2,
+                    ease: "power4.out"
+                });
 
-            gsap.to(button, {
-                backgroundColor: "#2f2f2f",
-                duration: 0.4,
-                ease: "power2.out"
-            });
+                gsap.to(button, {
+                    backgroundColor: "#2f2f2f",
+                    duration: 0.4,
+                    ease: "power2.out"
+                });
+            }
         });
     });
 
