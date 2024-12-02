@@ -3,9 +3,12 @@ document.addEventListener("DOMContentLoaded", function () {
     let buttons = document.querySelectorAll("#button");
 
     buttons.forEach(button => {
-        // Disable long-press default behaviors for better UX
+        // Prevent long-press menu but keep buttons clickable
         button.addEventListener("contextmenu", e => e.preventDefault());
-        button.addEventListener("touchstart", e => e.preventDefault());
+        button.addEventListener("touchstart", e => {
+            // Prevent default only for long-press without breaking click
+            if (e.touches.length > 1) e.preventDefault();
+        });
 
         // Set initial states for button text animations
         gsap.set(button.querySelectorAll(".button_text_in .button_block.is--in"), {
